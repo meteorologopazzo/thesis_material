@@ -125,3 +125,40 @@ def lcl(p,T,rh=None,rhl=None,rhs=None,return_ldl=False,return_min_lcl_ldl=False)
       return min(lcl,ldl)
    else:
       return lcl
+    
+    
+    
+    
+    
+    
+    
+def ccl(pres, T_prof, q2):
+    
+    '''
+    Every argument must be the local vertical profile 
+    of each quantity
+    # I set it with:
+        pressure in hPa
+        temperature in C
+        q2 in g/kg'''
+    
+    import metpy.calc as mpcalc
+    from metpy.units import units
+    
+    pres = pres*units.mbar
+    T_prof = T_prof*units.degC      
+    q2 = q2*units('g/kg')
+    
+    vp = mpcalc.vapor_pressure(pres, q2).to('hPa')
+    dwpoint = mpcalc.dewpoint(vp).to('degC')
+    
+    ccl_pres, ccl_temp, T_conv = ccl(pres, T_prof, dwpoint)
+    
+    return ccl_pres, ccl_temp, T_conv
+    
+    
+    
+    
+    
+    
+    
