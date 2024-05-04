@@ -152,7 +152,7 @@ def ccl(pres, T_prof, q2):
     vp = mpcalc.vapor_pressure(pres, q2).to('hPa')
     dwpoint = mpcalc.dewpoint(vp).to('degC')
     
-    ccl_pres, ccl_temp, T_conv = ccl(pres, T_prof, dwpoint)
+    ccl_pres, ccl_temp, T_conv = mpcalc.ccl(pres, T_prof, dwpoint)
     
     return ccl_pres, ccl_temp, T_conv
     
