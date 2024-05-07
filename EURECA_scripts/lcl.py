@@ -145,12 +145,15 @@ def ccl(pres, T_prof, q2):
     import metpy.calc as mpcalc
     from metpy.units import units
     
-    pres = pres*units.mbar
+    pres = pres*units.hPa
     T_prof = T_prof*units.degC      
     q2 = q2*units('g/kg')
     
-    vp = mpcalc.vapor_pressure(pres, q2).to('hPa')
-    dwpoint = mpcalc.dewpoint(vp).to('degC')
+    vp = mpcalc.vapor_pressure(pres, q2)
+    vp = vp.to('hPa')
+    
+    dwpoint = mpcalc.dewpoint(vp)
+    dwpoint = dwpoint.to('degC')
     
     ccl_pres, ccl_temp, T_conv = mpcalc.ccl(pres, T_prof, dwpoint)
     

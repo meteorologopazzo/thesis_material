@@ -56,7 +56,7 @@ def fb_distribution_npoint(control, variable, nbins, perc_step):
     bin_centers_fb = 0.5*(bin_edges_fb[1:]+bin_edges_fb[:-1])
     return distribution_control_fb, distribution_fb, std_err_distribution_fb, number_of_points_fb
 
-def fb_distribution_npoint_pvalue(control, variable, nbins, perc_step, popmean):
+def fb_distribution_npoint_pvalue(control, variable, nbins, perc_step, popmean, dof=None):
     from scipy import stats
     distribution_fb = np.zeros(nbins)
     std_distribution_fb = np.zeros(nbins)
@@ -79,11 +79,17 @@ def fb_distribution_npoint_pvalue(control, variable, nbins, perc_step, popmean):
         number_of_points_fb[qq] = np.sum(~np.isnan(variable[(control>=lower)&(control<upper)]))
         std_err_distribution_fb[qq] = std_distribution_fb[qq]/np.sqrt(number_of_points_fb[qq])
         
-        t_stat, p_value[qq] = stats.ttest_1samp(variable[(control>=lower)&(control<upper)], popmean=popmean)
-
+        if dof is None:
+            t_stat, p_value[qq] = stats.ttest_1samp(variable[(control>=lower)&(control<upper)], popmean=popmean)
+        elif dof:
+            t_stat, pv = stats.ttest_1samp(variable[(control>=lower)&(control<upper)], popmean=popmean)
+            p_value[qq] = 2*(1 - stats.t.cdf(np.abs(t_stat), df=dof))
+        
     bin_edges_fb[-1] = upper
     bin_centers_fb = 0.5*(bin_edges_fb[1:]+bin_edges_fb[:-1])
-    return distribution_control_fb, distribution_fb, std_err_distribution_fb, number_of_points_fb, p_value
+    return distribution_control_fb, distribution_fb, std_distribution_fb, std_err_distribution_fb, number_of_points_fb, p_value
+
+
 
 ##### Percentile distribution
 def perc_distribution(control, variable, nbins, perc_step):
@@ -162,7 +168,7 @@ def perc_distribution_pvalue(control, variable, nbins, perc_step, popmean):
         
         t_stat, p_value[qq] = stats.ttest_1samp(variable[(control>=lower)&(control<upper)], popmean=popmean)
         
-    return distribution_control, distribution, std_distribution, std_err_distribution, p_value
+    return distribution_control, distribution, std_distribution, std_err_distribution, number_of_points, p_value
 
 
 ##### Percentile distribution - it returns the p-value of each bin
@@ -193,9 +199,8 @@ def perc_distribution_pvalue_dof(control, variable, nbins, perc_step, popmean, d
         
         t_stat, pv = stats.ttest_1samp(variable[(control>=lower)&(control<upper)], popmean=popmean)
         p_value[qq] = 2*(1 - stats.t.cdf(np.abs(t_stat), df=df))
-#         print(df, p_value[qq], pv)
         
-    return distribution_control, distribution, std_distribution, std_err_distribution, p_value
+    return distribution_control, distribution, std_distribution, std_err_distribution, number_of_points, p_value
 
 # ----------
 # SCATTER and DENSITY PLOT - it returns figure
