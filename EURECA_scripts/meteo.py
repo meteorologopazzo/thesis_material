@@ -286,6 +286,45 @@ def spd_dir2uv(spd,dir):
 
 
 
+# using U, V at a specified vertical level!!
+def wind_dir_speed(U, V, interp, mask=None):
+    import numpy as np
+    
+    if interp:
+        U, V = (U[:,level,:,0:-1] + U[:,level,:,1:])*0.5, (V[:,level,0:-1,:] + V[:,level,1:,:])*0.5
+    
+    if mask is not None:
+        U, V = U.where(mask, drop=False), V.where(mask, drop=False)
+    
+    # compute wind directions
+    wind_dir = np.arctan2(np.array(V), np.array(U))
+    
+    # bring them in mathematical degrees
+    wind_dir_flat = wind_dir.flatten()
+    neg_indices = np.where(wind_dir_flat < 0)[0]
+    wind_dir_flat[neg_indices] += 2 * np.pi
+
+    # Convert radians to degrees for all values
+    wind_dir_flat *= 180. / np.pi
+
+    # Ensure wind_dir values are between 0 and 360 degrees
+    wind_dir_flat %= 360
+
+    # meteorological format
+    wind_dir_flat = 270. - wind_dir_flat
+    wind_dir_flat = wind_dir_flat%360
+    wind_dir_flat_nan = wind_dir_flat[~np.isnan(wind_dir_flat)]
+
+    # Reshape wind_dir_flat back to its original shape
+    wind_dir = wind_dir_flat.reshape(wind_dir.shape)
+    
+    # wind speed
+    wind_speed = np.sqrt(np.array(U)**2 + np.array(V)**2)
+#     wind_speed_flat = wind_speed.flatten()
+#     wind_speed_flat_nan = wind_speed_flat[~np.isnan(wind_speed_flat)]
+    
+    return wind_dir, wind_speed    #, wind_dir_flat_nan, wind_speed_flat_nan
+
 
 
 

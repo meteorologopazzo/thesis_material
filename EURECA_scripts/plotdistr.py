@@ -56,7 +56,7 @@ def fb_distribution_npoint(control, variable, nbins, perc_step):
     bin_centers_fb = 0.5*(bin_edges_fb[1:]+bin_edges_fb[:-1])
     return distribution_control_fb, distribution_fb, std_err_distribution_fb, number_of_points_fb
 
-def fb_distribution_npoint_pvalue(control, variable, nbins, perc_step, popmean, dof=None):
+def fb_distribution_npoint_pvalue(control, variable, nbins, perc_step, popmean, dof):
     from scipy import stats
     distribution_fb = np.zeros(nbins)
     std_distribution_fb = np.zeros(nbins)
@@ -81,8 +81,12 @@ def fb_distribution_npoint_pvalue(control, variable, nbins, perc_step, popmean, 
         
         if dof is None:
             t_stat, p_value[qq] = stats.ttest_1samp(variable[(control>=lower)&(control<upper)], popmean=popmean)
-        elif dof:
-            t_stat, pv = stats.ttest_1samp(variable[(control>=lower)&(control<upper)], popmean=popmean)
+        else:
+            ##########     WRONG VERSION     #########
+            #t_stat, pv = stats.ttest_1samp(variable[(control>=lower)&(control<upper)], popmean=popmean)
+            
+            #########      CORRECT VERSION   ##########
+            t_stat = (distribution_fb[qq] - popmean)/(std_distribution_fb[qq]/np.sqrt(dof))
             p_value[qq] = 2*(1 - stats.t.cdf(np.abs(t_stat), df=dof))
         
     bin_edges_fb[-1] = upper
@@ -173,7 +177,7 @@ def perc_distribution_pvalue(control, variable, nbins, perc_step, popmean):
 
 ##### Percentile distribution - it returns the p-value of each bin
 # 2 sided p-value = 2*(1-cdf(|tvalue|, dof)
-def perc_distribution_pvalue_dof(control, variable, nbins, perc_step, popmean, df):
+def perc_distribution_pvalue_dof(control, variable, nbins, perc_step, popmean):
     from scipy import stats
     distribution = np.zeros(nbins)
     std_distribution = np.zeros(nbins)
@@ -191,14 +195,15 @@ def perc_distribution_pvalue_dof(control, variable, nbins, perc_step, popmean, d
         cond_mean = np.nanmean(variable[(control>=lower)&(control<upper)])
         cond_std = np.nanstd(variable[(control>=lower)&(control<upper)])
         cond_mean_control = np.nanmean(control[(control>=lower)&(control<upper)])
-        distribution[qq] = cond_mean#-mean
+        distribution[qq] = cond_mean                          
         std_distribution[qq] = cond_std
-        distribution_control[qq] = cond_mean_control#-mean_control
+        distribution_control[qq] = cond_mean_control          
         number_of_points[qq] = np.sum(~np.isnan(variable[(control>=lower)&(control<upper)]))
         std_err_distribution[qq] = std_distribution[qq]/np.sqrt(number_of_points[qq])
         
-        t_stat, pv = stats.ttest_1samp(variable[(control>=lower)&(control<upper)], popmean=popmean)
-        p_value[qq] = 2*(1 - stats.t.cdf(np.abs(t_stat), df=df))
+            #########      CORRECT VERSION   ##########
+        t_stat = (distribution[qq] - popmean)/(std_distribution[qq]/np.sqrt(dof))
+        p_value[qq] = 2*(1 - stats.t.cdf(np.abs(t_stat), df=number_of_points[qq]))
         
     return distribution_control, distribution, std_distribution, std_err_distribution, number_of_points, p_value
 
@@ -213,9 +218,15 @@ def scatterplot_fit(X ,Y, fit, title, xlabel, ylabel, fig):
     plt.plot(xa, fit.slope*xa + fit.intercept, color='orange')
     plt.title(title, fontsize=12)
     plt.xlabel(xlabel); plt.ylabel(ylabel)
-    ff2 = "{:.2e}".format
-    plt.annotate('y =' + str(ff2(fit.intercept)) + ' + ' + str(ff2(fit.slope)) + '*x', xy=(0.1, 0.9), \
-                 xycoords='axes fraction', fontsize=12, color='orange')
+    
+    if fit.intercept > 100. or fit.slope > 100. :
+        ff2 = "{:.2e}".format
+        plt.annotate('y =' + str(ff2(fit.intercept)) + ' + ' + str(ff2(fit.slope)) + '*x', xy=(0.1, 0.9), \
+                     xycoords='axes fraction', fontsize=12, color='orange')
+    else:
+        
+        plt.annotate('y =' + str(round(fit.intercept, 2)) + ' + ' + str(round(fit.slope, 2)) + '*x', xy=(0.1, 0.9), \
+                     xycoords='axes fraction', fontsize=12, color='orange')
     return fig
 
 def scatterplot_fit_sigma(X ,Y, fit, sigma, title, xlabel, ylabel, fig):

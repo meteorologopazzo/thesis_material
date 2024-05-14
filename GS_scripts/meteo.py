@@ -285,17 +285,18 @@ def spd_dir2uv(spd,dir):
     return (u, v)
 
 
-
-def wind_dir_speed(mask, U, V, level, interp=True):
+# using U, V at a specified vertical level!!
+def wind_dir_speed(U, V, interp, mask=None):
     import numpy as np
     
     if interp:
-        U_mask, V_mask = (U[:,level,:,0:-1] + U[:,level,:,1:])*0.5, (V[:,level,0:-1,:] + V[:,level,1:,:])*0.5
+        U, V = (U[:,level,:,0:-1] + U[:,level,:,1:])*0.5, (V[:,level,0:-1,:] + V[:,level,1:,:])*0.5
     
-    U_mask, V_mask = U_mask.where(mask, drop=False), V_mask.where(mask, drop=False)
+    if mask is not None:
+        U, V = U.where(mask, drop=False), V.where(mask, drop=False)
     
     # compute wind directions
-    wind_dir = np.arctan2(np.array(V_mask), np.array(U_mask))
+    wind_dir = np.arctan2(np.array(V), np.array(U))
     
     # bring them in mathematical degrees
     wind_dir_flat = wind_dir.flatten()
@@ -317,11 +318,11 @@ def wind_dir_speed(mask, U, V, level, interp=True):
     wind_dir = wind_dir_flat.reshape(wind_dir.shape)
     
     # wind speed
-    wind_speed = np.sqrt(np.array(U_mask)**2 + np.array(V_mask)**2)
-    wind_speed_flat = wind_speed.flatten()
-    wind_speed_flat_nan = wind_speed_flat[~np.isnan(wind_speed_flat)]
+    wind_speed = np.sqrt(np.array(U)**2 + np.array(V)**2)
+#     wind_speed_flat = wind_speed.flatten()
+#     wind_speed_flat_nan = wind_speed_flat[~np.isnan(wind_speed_flat)]
     
-    return wind_dir, wind_speed, wind_dir_flat_nan, wind_speed_flat_nan
+    return wind_dir, wind_speed    #, wind_dir_flat_nan, wind_speed_flat_nan
 
 
 # This code executes if 'run flux.py' is executed from iPython cmd line
