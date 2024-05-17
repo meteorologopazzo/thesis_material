@@ -215,7 +215,7 @@ import matplotlib.pyplot as plt
 def scatterplot_fit(X ,Y, fit, title, xlabel, ylabel, fig):
     xa = np.arange(np.nanmin(X),np.nanmax(X),0.1)
     plt.scatter(X, Y, s=0.2)
-    plt.plot(xa, fit.slope*xa + fit.intercept, color='orange')
+    plt.plot(xa, fit.slope*xa + fit.intercept, color='orange', linewidth=2)
     plt.title(title, fontsize=12)
     plt.xlabel(xlabel); plt.ylabel(ylabel)
     
@@ -224,7 +224,6 @@ def scatterplot_fit(X ,Y, fit, title, xlabel, ylabel, fig):
         plt.annotate('y =' + str(ff2(fit.intercept)) + ' + ' + str(ff2(fit.slope)) + '*x', xy=(0.1, 0.9), \
                      xycoords='axes fraction', fontsize=12, color='orange')
     else:
-        
         plt.annotate('y =' + str(round(fit.intercept, 2)) + ' + ' + str(round(fit.slope, 2)) + '*x', xy=(0.1, 0.9), \
                      xycoords='axes fraction', fontsize=12, color='orange')
     return fig
@@ -263,6 +262,29 @@ def hist2d_sigma(x,y,sigma, nbin, title, xlabel, ylabel, fig):
     plt.title(title + str(sigma*3) +'km', fontsize=12)
     plt.xlabel(xlabel); plt.ylabel(ylabel)
     return fig
+
+
+def density_hexbin(x,y,fit,corcoe,grdsz,title,xlabel,ylabel,colormap):
+    x = x[~np.isnan(x)]
+    y = y[~np.isnan(y)]
+    
+    fig = plt.figure(figsize=(9,7))
+    plt.hexbin(x, y, gridsize=grdsz, bins='log', cmap=colormap, mincnt=1)
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+    plt.title(title)
+    plt.colorbar(label='counts [$log_{10}N$]')
+    
+    xx = np.linspace(x.min(), x.max(), 5)
+    plt.plot(xx, fit.slope*xx+fit.intercept, '-b', linewidth=3)
+    plt.annotate('y = '+str(round(fit.intercept,2))+ ' + ' + str(round(fit.slope,2))+'*x' , xy=(0.1, 0.9), \
+                         xycoords='axes fraction', fontsize=12, color='blue')    
+
+    plt.annotate('corr coeff = '+str(round(corcoe,2)), xy=(0.1, 0.85), \
+                         xycoords='axes fraction', fontsize=12, color='blue')
+
+    return fig
+
 
 # ----------
 # BOXPLOT

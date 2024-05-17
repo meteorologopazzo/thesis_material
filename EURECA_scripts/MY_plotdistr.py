@@ -58,7 +58,7 @@ def perc_distribution_pvalue_dof(control, variable, control_sub, var_sub, nbins,
 
 
 
-def fb_distribution_npoint_pvalue(control, variable, control_sub, var_sub, nbins, perc_step, popmean):
+def fb_distribution_npoint_pvalue_dof(control, variable, control_sub, var_sub, nbins, perc_step, popmean):
     
     from scipy import stats
     import numpy as np
@@ -90,7 +90,7 @@ def fb_distribution_npoint_pvalue(control, variable, control_sub, var_sub, nbins
         
         # SUBSAMPLED STATISTICS
         lower_sub = np.min(control[~np.isnan(control)])+qq*bw_sub
-        upper = lower_sub + bw_sub
+        upper_sub = lower_sub + bw_sub
         bin_edges_sub[qq] = lower_sub
         
         distribution_control_fb[qq] = np.nanmean(control[(control>=lower)&(control<upper)])

@@ -1,8 +1,8 @@
 # this is just to cut some code lines in the notebooks
 # it only spits out data 
 
-# from plotdistr import *
-from MY_plotdistr import *
+from plotdistr import perc_distribution_pvalue, fb_distribution_npoint_pvalue
+from MY_plotdistr import perc_distribution_pvalue_dof, fb_distribution_npoint_pvalue_dof
 #import pyinputplus as pyip
 
 def distrib_2d(x, y, perc_step, nbins, popmean, perc_fixbin):
@@ -83,7 +83,7 @@ def dist_3d_subsample(x,y,perc_step, nbins, popmean, nt, nttop, nskip, nskiptop,
                 var_sub = y[::nttop,h,::nskiptop,::nskiptop].copy();    var_sub = var_sub.reshape(-1)
             
             ##### Perc bin distribution: pvalue
-            dist_x, dist_y[h], std_y[h], stderr_y[h], npoints_y[h], pvalue_y_sub[h] = perc_distribution_pvalue_dof(control, variable, control_sub, var_sub, nbins, perc_step, popmean)
+            dist_x, dist_y[h], std_y[h], stderr_y[h], npoints_y[h], pvalue_y_sub[h] = fb_distribution_npoint_pvalue_dof(control, variable, control_sub, var_sub, nbins, perc_step, popmean)
 
             
     return dist_x, dist_y, std_y, stderr_y, npoints_y, pvalue_y_sub
@@ -100,7 +100,7 @@ def my_save_data(filename, varlist):
     import os 
     
     if os.path.exists(filename):
-        print('file already exists - DELETING IT')
+        print('file already exists - DELETING IT and creating it anew')
         os.remove(filename)
     
     with open(filename, 'wb') as f:

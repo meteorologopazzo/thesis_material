@@ -40,8 +40,30 @@ def slopes_r_p(x,y):
     corr_coeff, trash = stats.spearmanr(x,y)
     df = len(x)-2   # degrees of freedom.
     t_value = np.abs(corr_coeff)*np.sqrt((df)/(1-corr_coeff**2))
-    p_value = 1 - stats.t.cdf(t_value,df=df)
+    p_value = 2*(1 - stats.t.cdf(t_value,df=df))
     return linreg, corr_coeff, p_value
+
+def slopes_r_p_sub(x, y, nt, nskip):
+    from scipy import stats
+    x = x[::nt,::nskip,::nskip]
+    y = y[::nt,::nskip,::nskip]
+    x = x[~np.isnan(x)]
+    y = y[~np.isnan(y)]
+    
+    linreg = stats.linregress(x,y)
+    corr_coeff, trash = stats.spearmanr(x,y)
+    
+    df = len(x)-2
+    mean_x = np.mean(x);  mean_x2 = np.mean(x**2)
+    sigma_y = np.sqrt( np.sum(  (y-linreg.slope*x-linreg.intercept)**2 )/df  )
+    sigma_slope = sigma_y/(np.sqrt(len(x))*(mean_x2-mean_x**2) ) 
+    
+    t_value_cannelli = linreg.slope/sigma_slope     # SOMETHING MISSING?
+    p_value_cannelli = 2*(1 - stats.t.cdf(t_value_cannelli,df=df))
+      
+    t_value = np.abs(corr_coeff)*np.sqrt((df)/(1-corr_coeff**2))
+    p_value = 2*(1 - stats.t.cdf(t_value,df=df))
+    return linreg, corr_coeff, p_value, t_value_cannelli, p_value_cannelli
 
 ###############################
 # compute slope, R, pvalue, RMSE, bias for each grid point 
