@@ -287,7 +287,7 @@ def spd_dir2uv(spd,dir):
 
 
 # using U, V at a specified vertical level!!
-def wind_dir_speed(U, V, interp, mask=None):
+def wind_dir_speed(U, V, interp=False, mask=None, flat_nan=False):
     import numpy as np
     
     if interp:
@@ -320,13 +320,20 @@ def wind_dir_speed(U, V, interp, mask=None):
     
     # wind speed
     wind_speed = np.sqrt(np.array(U)**2 + np.array(V)**2)
-#     wind_speed_flat = wind_speed.flatten()
-#     wind_speed_flat_nan = wind_speed_flat[~np.isnan(wind_speed_flat)]
+    wind_speed_flat = wind_speed.flatten()
+    wind_speed_flat_nan = wind_speed_flat[~np.isnan(wind_speed_flat)]
     
-    return wind_dir, wind_speed    #, wind_dir_flat_nan, wind_speed_flat_nan
+    if flat_nan:
+        return wind_dir, wind_speed, wind_dir_flat_nan, wind_speed_flat_nan
+    else:
+        return wind_dir, wind_speed   #, wind_dir_flat_nan, wind_speed_flat_nan
 
 
-
+def richardson_number(height, potential_temperature, u, v) :
+    from metpy.calc import gradient_richardson_number
+    ri = gradient_richardson_number(height, potential_temperature, u, v, vertical_dim=1) 
+    
+    return ri
 
 
 # This code executes if 'run flux.py' is executed from iPython cmd line

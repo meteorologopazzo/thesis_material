@@ -32,19 +32,33 @@ def compute_pdf_nbin(xa, nbin):
 
 ###############################
 # function to compute linear regression, correlation coeff and p value
-def slopes_r_p(x,y):
+# TO BE USED WHEN FITTING PERCENTILES!
+def slopes_r_p(x,y,std_y=None):
     from scipy import stats
+    import numpy as np
+    
     x = x[~np.isnan(x)]
     y = y[~np.isnan(y)]
     linreg = stats.linregress(x,y)
     corr_coeff, trash = stats.spearmanr(x,y)
-    df = len(x)-2   # degrees of freedom.
+    df = np.size(x)-2   # degrees of freedom.
     t_value = np.abs(corr_coeff)*np.sqrt((df)/(1-corr_coeff**2))
     p_value = 2*(1 - stats.t.cdf(t_value,df=df))
-    return linreg, corr_coeff, p_value
+    
+    chisq = 999.
+    if std_y is not None:
+        chisq = np.sum(  (y-linreg.slope*x-linreg.intercept)**2 / std_y**2 )
+        chisq_cumul_right = 1. - stats.chi2.cdf(chisq, df=df)
+        chisq_rid = chisq/df
+        
+    return linreg, corr_coeff, p_value, chisq, chisq_cumul_right, chisq_rid
 
-def slopes_r_p_sub(x, y, nt, nskip):
+
+########### APPLY SUBSAMPLING FOR COMPARISON and draw statistics only on subsampled data
+def slopes_r_p_onlysub(x, y, nt, nskip):
     from scipy import stats
+    import numpy as np
+    
     x = x[::nt,::nskip,::nskip]
     y = y[::nt,::nskip,::nskip]
     x = x[~np.isnan(x)]
@@ -53,17 +67,55 @@ def slopes_r_p_sub(x, y, nt, nskip):
     linreg = stats.linregress(x,y)
     corr_coeff, trash = stats.spearmanr(x,y)
     
-    df = len(x)-2
+    df = np.size(x)-2
     mean_x = np.mean(x);  mean_x2 = np.mean(x**2)
     sigma_y = np.sqrt( np.sum(  (y-linreg.slope*x-linreg.intercept)**2 )/df  )
-    sigma_slope = sigma_y/(np.sqrt(len(x))*(mean_x2-mean_x**2) ) 
+    sigma_slope = sigma_y/( np.sqrt(np.size(x)*(mean_x2-mean_x**2) ) )  
     
     t_value_cannelli = linreg.slope/sigma_slope     # SOMETHING MISSING?
     p_value_cannelli = 2*(1 - stats.t.cdf(t_value_cannelli,df=df))
-      
+
     t_value = np.abs(corr_coeff)*np.sqrt((df)/(1-corr_coeff**2))
     p_value = 2*(1 - stats.t.cdf(t_value,df=df))
     return linreg, corr_coeff, p_value, t_value_cannelli, p_value_cannelli
+
+
+########### APPLY SUBSAMPLING FOR COMPARISON only when assessing fit quality
+def slopes_r_p_mix(x, y, nt, nskip):
+    from scipy import stats
+    import numpy as np
+    
+    xx = x[::nt,::nskip,::nskip]
+    yy = y[::nt,::nskip,::nskip]
+    
+    x = x[~np.isnan(x)]
+    y = y[~np.isnan(y)]
+    
+    xx = xx[~np.isnan(xx)]
+    yy = yy[~np.isnan(yy)]
+    
+    linreg = stats.linregress(x,y)
+    corr_coeff, trash = stats.spearmanr(x,y)
+    
+    df = np.size(xx)-2
+    mean_x = np.mean(x);  mean_x2 = np.mean(x**2)
+    sigma_y = np.sqrt( np.sum(  (y-linreg.slope*x-linreg.intercept)**2 )/df  )
+    sigma_slope = sigma_y/( np.sqrt(np.size(xx)*(mean_x2-mean_x**2) ) )
+    
+    t_value_cannelli = linreg.slope/sigma_slope     # SOMETHING MISSING?
+    p_value_cannelli = 2*(1 - stats.t.cdf(t_value_cannelli,df=df))
+    
+    #  to ADD: scipy.stats.chisquare(f_obs, f_exp=None) --> not working as expected
+    # chisq = np.sum(  (y-linreg.slope*x-linreg.intercept)**2 / std_y**2 )
+    # in realtà mi servirebbero le dev std delle diverse osservazioni y --> calcolo X2 solo per i percentili e sto contento
+    
+
+    t_value = np.abs(corr_coeff)*np.sqrt((df)/(1-corr_coeff**2))
+    p_value = 2*(1 - stats.t.cdf(t_value,df=df))
+    return linreg, corr_coeff, p_value, t_value_cannelli, p_value_cannelli
+
+
+
 
 ###############################
 # compute slope, R, pvalue, RMSE, bias for each grid point 
