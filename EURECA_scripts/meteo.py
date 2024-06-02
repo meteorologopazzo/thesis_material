@@ -330,9 +330,13 @@ def wind_dir_speed(U, V, interp=False, mask=None, flat_nan=False):
 
 
 def richardson_number(height, potential_temperature, u, v) :
-    from metpy.calc import gradient_richardson_number
-    ri = gradient_richardson_number(height, potential_temperature, u, v, vertical_dim=1) 
+    import metpy.calc as mpcalc
+    from metpy.units import units
+    BV_freq = mpcalc.brunt_vaisala_frequency_squared(height*units.meters, potential_temperature*units.kelvin, vertical_dim = 1) 
+    dudz = (mpcalc.first_derivative(u*units('m/s'), axis=1, x=height*units.meters))**2
+    dvdz = (mpcalc.first_derivative(v*units('m/s'), axis=1, x=height*units.meters))**2
     
+    ri = BV_freq/(dudz+dvdz)
     return ri
 
 

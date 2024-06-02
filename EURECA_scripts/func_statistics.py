@@ -68,16 +68,21 @@ def slopes_r_p_onlysub(x, y, nt, nskip):
     corr_coeff, trash = stats.spearmanr(x,y)
     
     df = np.size(x)-2
-    mean_x = np.mean(x);  mean_x2 = np.mean(x**2)
+    mean_x = np.mean(x);  mean_x2 = np.mean(x**2); lever_arm = mean_x2-mean_x**2
+    
     sigma_y = np.sqrt( np.sum(  (y-linreg.slope*x-linreg.intercept)**2 )/df  )
-    sigma_slope = sigma_y/( np.sqrt(np.size(x)*(mean_x2-mean_x**2) ) )  
+    sigma_slope = sigma_y/( np.sqrt(np.size(xx)*(lever_arm) ) )
+    sigma_intercept = sigma_y*np.sqrt(mean_x2/( np.size(xx)*(lever_arm) ))
+    
+    sigmas = (sigma_slope, sigma_intercept)
     
     t_value_cannelli = linreg.slope/sigma_slope     # SOMETHING MISSING?
     p_value_cannelli = 2*(1 - stats.t.cdf(t_value_cannelli,df=df))
 
     t_value = np.abs(corr_coeff)*np.sqrt((df)/(1-corr_coeff**2))
     p_value = 2*(1 - stats.t.cdf(t_value,df=df))
-    return linreg, corr_coeff, p_value, t_value_cannelli, p_value_cannelli
+    
+    return linreg, corr_coeff, p_value, p_value_cannelli, sigmas
 
 
 ########### APPLY SUBSAMPLING FOR COMPARISON only when assessing fit quality
@@ -98,9 +103,13 @@ def slopes_r_p_mix(x, y, nt, nskip):
     corr_coeff, trash = stats.spearmanr(x,y)
     
     df = np.size(xx)-2
-    mean_x = np.mean(x);  mean_x2 = np.mean(x**2)
+    mean_x = np.mean(x);  mean_x2 = np.mean(x**2); lever_arm = mean_x2-mean_x**2
+    
     sigma_y = np.sqrt( np.sum(  (y-linreg.slope*x-linreg.intercept)**2 )/df  )
-    sigma_slope = sigma_y/( np.sqrt(np.size(xx)*(mean_x2-mean_x**2) ) )
+    sigma_slope = sigma_y/( np.sqrt(np.size(xx)*(lever_arm) ) )
+    sigma_intercept = sigma_y*np.sqrt(mean_x2/( np.size(xx)*(lever_arm) ))
+    
+    sigmas = (sigma_slope, sigma_intercept)
     
     t_value_cannelli = linreg.slope/sigma_slope     # SOMETHING MISSING?
     p_value_cannelli = 2*(1 - stats.t.cdf(t_value_cannelli,df=df))
@@ -112,7 +121,8 @@ def slopes_r_p_mix(x, y, nt, nskip):
 
     t_value = np.abs(corr_coeff)*np.sqrt((df)/(1-corr_coeff**2))
     p_value = 2*(1 - stats.t.cdf(t_value,df=df))
-    return linreg, corr_coeff, p_value, t_value_cannelli, p_value_cannelli
+    
+    return linreg, corr_coeff, p_value, p_value_cannelli, sigmas
 
 
 
