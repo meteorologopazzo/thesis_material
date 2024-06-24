@@ -114,7 +114,7 @@ def slopes_r_p_mix(x, y, nt, nskip):
     t_value_cannelli = linreg.slope/sigma_slope     # SOMETHING MISSING?
     p_value_cannelli = 2*(1 - stats.t.cdf(t_value_cannelli,df=df))
     
-    #  to ADD: scipy.stats.chisquare(f_obs, f_exp=None) --> not working as expected
+    # to ADD: scipy.stats.chisquare(f_obs, f_exp=None) --> not working as expected
     # chisq = np.sum(  (y-linreg.slope*x-linreg.intercept)**2 / std_y**2 )
     # in realtà mi servirebbero le dev std delle diverse osservazioni y --> calcolo X2 solo per i percentili e sto contento
     
@@ -125,6 +125,60 @@ def slopes_r_p_mix(x, y, nt, nskip):
     return linreg, corr_coeff, p_value, p_value_cannelli, sigmas
 
 
+
+##### POINT-WISE REGRESSION OF Y WRT X
+# MISSING: subsampling considering time corrrelations
+def point_regression(x,y):
+    
+    # x,y formatted as : time-lat-lon
+    
+    import numpy as np
+    from scipy import stats
+    
+    #xx = x[::nt,::nskip,::nskip]
+    #yy = y[::nt,::nskip,::nskip]
+    
+    #x = x[~np.isnan(x)]
+    #y = y[~np.isnan(y)]
+    
+    #xx = xx[~np.isnan(xx)]
+    #yy = yy[~np.isnan(yy)]
+    
+    linreg = stats.linregress(x,y)
+    corr_coeff, trash = stats.spearmanr(x,y, axis=0)
+    
+    df = np.size(xx)-2
+    mean_x = np.mean(x);  mean_x2 = np.mean(x**2); lever_arm = mean_x2-mean_x**2
+    
+    sigma_y = np.sqrt( np.sum(  (y-linreg.slope*x-linreg.intercept)**2 )/df  )
+    sigma_slope = sigma_y/( np.sqrt(np.size(xx)*(lever_arm) ) )
+    sigma_intercept = sigma_y*np.sqrt(mean_x2/( np.size(xx)*(lever_arm) ))
+    
+    sigmas = (sigma_slope, sigma_intercept)
+    
+    t_value_cannelli = linreg.slope/sigma_slope     # SOMETHING MISSING?
+    p_value_cannelli = 2*(1 - stats.t.cdf(t_value_cannelli,df=df))
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 
 
 ###############################

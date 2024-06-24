@@ -102,6 +102,8 @@ def my_save_data(filename, varlist):
     if os.path.exists(filename):
         print('file already exists - DELETING IT and creating it anew')
         os.remove(filename)
+    else:
+        print('creating new file and saving variables')
     
     with open(filename, 'wb') as f:
         for x in varlist:
