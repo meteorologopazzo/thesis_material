@@ -93,6 +93,7 @@ def nan_gaussian_filter(field,sigma):
     I follow the first answer here 
     https://stackoverflow.com/questions/18697532/gaussian-filtering-a-image-with-nan-in-python
     By default, the filter is truncated at 4 sigmas.
+    If the sigma provided is zero, the function just returns the input field (by Ale 26.07.24)
     """
     import numpy as np
     from scipy.ndimage import gaussian_filter
@@ -102,18 +103,23 @@ def nan_gaussian_filter(field,sigma):
     # Take the original field and replace the NaNs with zeros.
     field0 = field.copy()
     field0[np.isnan(field)] = 0
-    ff = gaussian_filter(field0, sigma=sigma)
     
-    # Create the smoothed weight field.
-    weight = 0*field.copy()+1
-    weight[np.isnan(field)] = 0
-    ww = gaussian_filter(weight, sigma=sigma)
+    if sigma > 0:
+        ff = gaussian_filter(field0, sigma=sigma)
     
-    zz = ff/(ww*weight) # This rescale for the actual weights used in the filter and set to NaN where the field
-                        # was originally NaN.
-    #zz[zz == np.inf] = np.nan
-    zz[np.isinf(zz)] = np.nan
-    return zz
+        # Create the smoothed weight field.
+        weight = 0*field.copy()+1
+        weight[np.isnan(field)] = 0
+        ww = gaussian_filter(weight, sigma=sigma)
+
+        zz = ff/(ww*weight) # This rescale for the actual weights used in the filter and set to NaN where the field
+                            # was originally NaN.
+        #zz[zz == np.inf] = np.nan
+        zz[np.isinf(zz)] = np.nan
+        return zz
+    
+    elif sigma == 0:
+        return field
 
 def L2wind_2_regular_grid_mask(lon_wind,lat_wind,u,v,lon_sst,lat_sst,extent_param):
     """
