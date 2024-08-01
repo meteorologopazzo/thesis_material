@@ -104,7 +104,10 @@ def nan_gaussian_filter(field,sigma):
     field0 = field.copy()
     field0[np.isnan(field)] = 0
     
-    if sigma > 0:
+    if sigma == 'inf':
+        return np.nanmean(field, axis=(0,1))
+    
+    elif sigma > 0:
         ff = gaussian_filter(field0, sigma=sigma)
     
         # Create the smoothed weight field.
@@ -120,6 +123,8 @@ def nan_gaussian_filter(field,sigma):
     
     elif sigma == 0:
         return field
+    
+    
 
 def L2wind_2_regular_grid_mask(lon_wind,lat_wind,u,v,lon_sst,lat_sst,extent_param):
     """
