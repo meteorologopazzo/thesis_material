@@ -169,7 +169,15 @@ def point_regression(x,y):
     
     
     
+def find_percentile(arr, num):
+    import numpy as np
+    arr = arr[~np.isnan(arr)].flatten()
+    arr_sorted = np.sort(arr)
+
+    rank = np.searchsorted(arr_sorted, num, side='right')
+    percentile = (rank / len(arr_sorted)) * 100
     
+    return percentile
     
     
     
