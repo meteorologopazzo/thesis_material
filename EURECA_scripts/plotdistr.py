@@ -264,7 +264,7 @@ def hist2d_sigma(x,y,sigma, nbin, title, xlabel, ylabel, fig):
     return fig
 
 
-def density_hexbin(x,y,fit,corcoe,grdsz,title,xlabel,ylabel,colormap,pos):
+def density_hexbin(x,y,plot_fit,fit,corcoe,grdsz,title,xlabel,ylabel,colormap,pos):
     
 #     x = x.flatten()
 #     y = y.flatten()
@@ -279,9 +279,10 @@ def density_hexbin(x,y,fit,corcoe,grdsz,title,xlabel,ylabel,colormap,pos):
     plt.title(title)
     plt.colorbar(label='counts [$log_{10}N$]')
     
-    if fit is not None:
-        xx = np.linspace(x.min(), x.max(), 5)
-        plt.plot(xx, fit.slope*xx+fit.intercept, '-b', linewidth=3)
+    if (fit is not None):
+        if plot_fit:
+            xx = np.linspace(x.min(), x.max(), 5)
+            plt.plot(xx, fit.slope*xx+fit.intercept, '--k', linewidth=1.5)
         
         if np.abs( np.log10(fit.slope) ) > 2. :
             ff2 = "{:.2e}".format
@@ -292,8 +293,8 @@ def density_hexbin(x,y,fit,corcoe,grdsz,title,xlabel,ylabel,colormap,pos):
                              xycoords='axes fraction', fontsize=8, color='blue')
         
             
-        if corcoe is not None:
-            plt.annotate('corr coeff = '+str(round(corcoe,2)), xy=(pos[0],pos[1]-0.05), \
+    if corcoe is not None:
+        plt.annotate('corr coeff = '+str(round(corcoe,2)), xy=(pos[0],pos[1]-0.05), \
                                  xycoords='axes fraction', fontsize=8, color='blue')
 
 #     return fig
