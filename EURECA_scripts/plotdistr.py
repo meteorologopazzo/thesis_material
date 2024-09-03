@@ -273,11 +273,12 @@ def density_hexbin(x,y,plot_fit,fit,corcoe,grdsz,title,xlabel,ylabel,colormap,po
     y = y[~np.isnan(y)]
     
 #     fig, ax = plt.figure(figsize=(9,7))
-    plt.hexbin(x, y, gridsize=grdsz, bins='log', cmap=colormap, mincnt=1)
-    plt.xlabel(xlabel)
-    plt.ylabel(ylabel)
+    im = plt.hexbin(x, y, gridsize=grdsz, bins='log', cmap=colormap, mincnt=1)
+    plt.xlabel(xlabel, fontsize=14)
+    plt.ylabel(ylabel, fontsize=14)
     plt.title(title)
-    plt.colorbar(label='counts [$log_{10}N$]')
+    cbar = plt.colorbar(im) 
+    cbar.set_label(label='counts [$log_{10}N$]', fontsize=12)
     
     if (fit is not None):
         if plot_fit:

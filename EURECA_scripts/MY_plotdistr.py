@@ -47,7 +47,7 @@ def perc_distribution_pvalue_dof(control, variable, control_sub, var_sub, nbins,
         std_err_distribution[qq] = std_distribution[qq]/np.sqrt(number_of_points_sub[qq])
         
         #################      CORRECT VERSION   ###################
-        dof = number_of_points[qq]
+        dof =  number_of_points_sub[qq]  #number_of_points[qq]
         t_stat = (distribution[qq] - popmean)/std_err_distribution[qq]    #(std_distribution[qq]/np.sqrt(dof))
         p_value[qq] = 2*(1 - stats.t.cdf(np.abs(t_stat), df=dof))
         
