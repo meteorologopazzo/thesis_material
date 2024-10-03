@@ -283,24 +283,24 @@ def density_hexbin(x,y,plot_fit,fit,corcoe,grdsz,title,xlabel,ylabel,colormap,po
     if (fit is not None):
         if plot_fit:
             xx = np.linspace(x.min(), x.max(), 5)
-            plt.plot(xx, fit.slope*xx+fit.intercept, '--k', linewidth=1.5)
+            plt.plot(xx, fit.slope*xx+fit.intercept, '-r', linewidth=3)
         
         if np.abs( np.log10(fit.slope) ) > 2. :
             ff2 = "{:.2e}".format
             plt.annotate('y = '+ str(ff2(fit.slope))+'*x' + ' ' + '+ ' + ' ' +str(ff2(fit.intercept)), xy=(pos[0],pos[1]), \
-                             xycoords='axes fraction', fontsize=8, color='blue')
+                             xycoords='axes fraction', fontsize=12, color='blue')
         else: 
             plt.annotate('y = '+ str(round(fit.slope,2))+'*x' + ' ' + '+ ' + ' ' +str(round(fit.intercept,2)), xy=(pos[0],pos[1]), \
-                             xycoords='axes fraction', fontsize=8, color='blue')
+                             xycoords='axes fraction', fontsize=12, color='blue')
         
             
     if corcoe is not None:
-        plt.annotate('corr coeff = '+str(round(corcoe,2)), xy=(pos[0],pos[1]-0.05), \
-                                 xycoords='axes fraction', fontsize=8, color='blue')
+        plt.annotate('corr '+str(round(corcoe,2)), xy=(pos[0],pos[1]-0.05), \
+                                 xycoords='axes fraction', fontsize=12, color='blue')
 
 #     return fig
     
-def density_hexbin_subplots(x,y,fit,corcoe,grdsz, fig, ax, title,xlabel,ylabel,colormap):
+def density_hexbin_subplots(x, y, fit, corcoe, grdsz, fig, ax, title, xlabel, ylabel, colormap, pos):
 #     x = x.flatten()
 #     y = y.flatten()
     
@@ -308,27 +308,28 @@ def density_hexbin_subplots(x,y,fit,corcoe,grdsz, fig, ax, title,xlabel,ylabel,c
     y = y[~np.isnan(y)]
     
     hxb = ax.hexbin(x, y, gridsize=grdsz, bins='log', cmap=colormap, mincnt=1)
-    ax.set_xlabel(xlabel)
-    ax.set_ylabel(ylabel)
-    ax.set_title(title)
-    fig.colorbar(hxb, ax=ax, label='counts [$log_{10}N$]')
+    ax.set_xlabel(xlabel, fontsize=14)
+    ax.set_ylabel(ylabel, fontsize=14)
+    ax.set_title(title, fontsize=14)
+    cbar = fig.colorbar(hxb, ax=ax) #, label='counts [$log_{10}N$]')
+    cbar.set_label('counts [$log_{10}N$]', fontsize=12)
     
     if fit is not None:
         xx = np.linspace(x.min(), x.max(), 5)
         ax.plot(xx, fit.slope*xx+fit.intercept, '-b', linewidth=3)
         
-        #if np.abs( np.log10(fit.slope) ) > 2. :
-        #    ff2 = "{:.2e}".format
-        #    ax.annotate('y = '+str(ff2(fit.intercept))+ ' + ' + str(ff2(fit.slope))+'*x' , xy=(0.1, 0.95), \
-        #                     xycoords='axes fraction', fontsize=10, color='blue')
-        #else: 
-        #    ax.annotate('y = '+str(round(fit.intercept,2))+ ' + ' + str(round(fit.slope,2))+'*x' , xy=(0.1, 0.95), \
-        #                     xycoords='axes fraction', fontsize=10, color='blue')
+        if np.abs( np.log10(fit.slope) ) > 2. :
+            ff2 = "{:.2e}".format
+            ax.annotate('y = '+str(ff2(fit.intercept))+ ' + ' + str(ff2(fit.slope))+'*x' , xy=(pos[0], pos[1]), \
+                            xycoords='axes fraction', fontsize=12, color='blue')
+        else: 
+            ax.annotate('y = '+str(round(fit.intercept,2))+ ' + ' + str(round(fit.slope,2))+'*x' , xy=(pos[0], pos[1]), \
+                            xycoords='axes fraction', fontsize=12, color='blue')
         
             
-        #if corcoe is not None:
-        #    ax.annotate('corr coeff = '+str(round(corcoe,2)), xy=(0.1, 0.9), \
-        #                         xycoords='axes fraction', fontsize=10, color='blue')
+        if corcoe is not None:
+            ax.annotate('corr = '+str(round(corcoe,2)), xy=(pos[0], pos[1]-0.05), \
+                                xycoords='axes fraction', fontsize=12, color='blue')
 
     #sreturn fig   
     

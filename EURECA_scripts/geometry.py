@@ -255,7 +255,7 @@ def L2wind_2_regular_grid_mask(lon_wind,lat_wind,u,v,lon_sst,lat_sst,extent_para
 def great_circle(lon1, lat1, lon2, lat2): # The result is given in km.
     import numpy as np
     
-    R = 6371.0e3 # Earth radius in km.
+    R = 6371.0 # Earth radius in km.
     lon1 = np.pi*lon1/180
     lat1 = np.pi*lat1/180
     lon2 = np.pi*lon2/180
