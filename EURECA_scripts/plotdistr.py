@@ -283,7 +283,7 @@ def density_hexbin(x,y,plot_fit,fit,corcoe,grdsz,title,xlabel,ylabel,colormap,po
     if (fit is not None):
         if plot_fit:
             xx = np.linspace(x.min(), x.max(), 5)
-            plt.plot(xx, fit.slope*xx+fit.intercept, '-r', linewidth=3)
+            plt.plot(xx, fit.slope*xx+fit.intercept, '-b', linewidth=3)
         
         if np.abs( np.log10(fit.slope) ) > 2. :
             ff2 = "{:.2e}".format
