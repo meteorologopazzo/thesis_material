@@ -273,7 +273,7 @@ def density_hexbin(x,y,plot_fit,fit,corcoe,grdsz,title,xlabel,ylabel,colormap,po
     y = y[~np.isnan(y)]
     
 #     fig, ax = plt.figure(figsize=(9,7))
-    im = plt.hexbin(x, y, gridsize=grdsz, bins='log', cmap=colormap, mincnt=1)
+    im = plt.hexbin(x, y, gridsize=grdsz, cmap=colormap, mincnt=1) # bins='log',
     plt.xlabel(xlabel, fontsize=14)
     plt.ylabel(ylabel, fontsize=14)
     plt.title(title)
