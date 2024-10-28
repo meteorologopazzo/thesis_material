@@ -273,7 +273,7 @@ def density_hexbin(x,y,plot_fit,fit,corcoe,grdsz,title,xlabel,ylabel,colormap,po
     y = y[~np.isnan(y)]
     
 #     fig, ax = plt.figure(figsize=(9,7))
-    im = plt.hexbin(x, y, gridsize=grdsz, cmap=colormap, mincnt=1) # bins='log',
+    im = plt.hexbin(x, y, gridsize=grdsz, bins='log', cmap=colormap, mincnt=1) # 
     plt.xlabel(xlabel, fontsize=14)
     plt.ylabel(ylabel, fontsize=14)
     plt.title(title)
@@ -318,18 +318,18 @@ def density_hexbin_subplots(x, y, fit, corcoe, grdsz, fig, ax, title, xlabel, yl
         xx = np.linspace(x.min(), x.max(), 5)
         ax.plot(xx, fit.slope*xx+fit.intercept, '-b', linewidth=3)
         
-        if np.abs( np.log10(fit.slope) ) > 2. :
-            ff2 = "{:.2e}".format
-            ax.annotate('y = '+str(ff2(fit.intercept))+ ' + ' + str(ff2(fit.slope))+'*x' , xy=(pos[0], pos[1]), \
-                            xycoords='axes fraction', fontsize=12, color='blue')
-        else: 
-            ax.annotate('y = '+str(round(fit.intercept,2))+ ' + ' + str(round(fit.slope,2))+'*x' , xy=(pos[0], pos[1]), \
-                            xycoords='axes fraction', fontsize=12, color='blue')
+#         if np.abs( np.log10(fit.slope) ) > 2. :
+#             ff2 = "{:.2e}".format
+#             ax.annotate('y = '+str(ff2(fit.intercept))+ ' + ' + str(ff2(fit.slope))+'*x' , xy=(pos[0], pos[1]), \
+#                             xycoords='axes fraction', fontsize=12, color='blue')
+#         else: 
+#             ax.annotate('y = '+str(round(fit.intercept,2))+ ' + ' + str(round(fit.slope,2))+'*x' , xy=(pos[0], pos[1]), \
+#                             xycoords='axes fraction', fontsize=12, color='blue')
         
             
-        if corcoe is not None:
-            ax.annotate('corr = '+str(round(corcoe,2)), xy=(pos[0], pos[1]-0.05), \
-                                xycoords='axes fraction', fontsize=12, color='blue')
+#         if corcoe is not None:
+#             ax.annotate('corr = '+str(round(corcoe,2)), xy=(pos[0], pos[1]-0.05), \
+#                                 xycoords='axes fraction', fontsize=12, color='blue')
 
     #sreturn fig   
     
