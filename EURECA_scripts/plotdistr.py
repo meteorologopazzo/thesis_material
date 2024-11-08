@@ -264,7 +264,7 @@ def hist2d_sigma(x,y,sigma, nbin, title, xlabel, ylabel, fig):
     return fig
 
 
-def density_hexbin(x,y,plot_fit,fit,corcoe,grdsz,title,xlabel,ylabel,colormap,pos):
+def density_hexbin(x,y,plot_fit,fit,corcoe,grdsz,title,xlabel,ylabel,colormap,pos, slope_units=None):
     
 #     x = x.flatten()
 #     y = y.flatten()
@@ -287,16 +287,20 @@ def density_hexbin(x,y,plot_fit,fit,corcoe,grdsz,title,xlabel,ylabel,colormap,po
         
         if np.abs( np.log10(fit.slope) ) > 2. :
             ff2 = "{:.2e}".format
-            plt.annotate('y = '+ str(ff2(fit.slope))+'*x' + ' ' + '+ ' + ' ' +str(ff2(fit.intercept)), xy=(pos[0],pos[1]), \
-                             xycoords='axes fraction', fontsize=12, color='blue')
+#             plt.annotate('y = '+ str(ff2(fit.slope))+'*x' + ' ' + '+ ' + ' ' +str(ff2(fit.intercept)), xy=(pos[0],pos[1]), \
+#                              xycoords='axes fraction', fontsize=12, color='blue')
+            plt.annotate('slope = '+ str(ff2(fit.slope))+str(slope_units), xy=(pos[0],pos[1]), \
+                             xycoords='axes fraction', fontsize=12, color='k')
         else: 
-            plt.annotate('y = '+ str(round(fit.slope,2))+'*x' + ' ' + '+ ' + ' ' +str(round(fit.intercept,2)), xy=(pos[0],pos[1]), \
-                             xycoords='axes fraction', fontsize=12, color='blue')
+#             plt.annotate('y = '+ str(round(fit.slope,2))+'*x' + ' ' + '+ ' + ' ' +str(round(fit.intercept,2)), xy=(pos[0],pos[1]), \
+#                              xycoords='axes fraction', fontsize=12, color='blue')
+              plt.annotate('slope = '+ str(round(fit.slope,2))+str(slope_units), xy=(pos[0],pos[1]), \
+                             xycoords='axes fraction', fontsize=12, color='k')
         
             
     if corcoe is not None:
-        plt.annotate('corr '+str(round(corcoe,2)), xy=(pos[0],pos[1]-0.05), \
-                                 xycoords='axes fraction', fontsize=12, color='blue')
+        plt.annotate('corr = '+str(round(corcoe,2)), xy=(pos[0],pos[1]-0.05), \
+                                 xycoords='axes fraction', fontsize=12, color='k')
 
 #     return fig
     
