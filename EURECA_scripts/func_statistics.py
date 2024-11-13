@@ -92,7 +92,7 @@ def slopes_r_p_onlysub(x, y, nt, nskip):
 
 
 ########### APPLY SUBSAMPLING FOR COMPARISON only when assessing fit quality
-def slopes_r_p_mix(x, y, nt, nskip):
+def slopes_r_p_mix(x, y, nt, nskip, ls=False):
     from scipy import stats
     import numpy as np
     
@@ -128,7 +128,10 @@ def slopes_r_p_mix(x, y, nt, nskip):
     t_value = np.abs(corr_coeff)*np.sqrt((df)/(1-corr_coeff**2))
     p_value = 2*(1 - stats.t.cdf(t_value,df=df))
     
-    return linreg, corr_coeff, p_value, p_value_cannelli, sigmas
+    if ls:
+        return [linreg, corr_coeff, p_value, p_value_cannelli, sigmas]
+    else:
+        return linreg, corr_coeff, p_value, p_value_cannelli, sigmas
 
 
 
