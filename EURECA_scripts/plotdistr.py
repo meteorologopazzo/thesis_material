@@ -274,16 +274,16 @@ def density_hexbin(x,y,plot_fit,fit,corcoe,grdsz,title,xlabel,ylabel,colormap,po
     
 #     fig, ax = plt.figure(figsize=(9,7))
     im = plt.hexbin(x, y, gridsize=grdsz, bins='log', cmap=colormap, mincnt=1) # 
-    plt.xlabel(xlabel, fontsize=14)
-    plt.ylabel(ylabel, fontsize=14)
-    plt.title(title)
+    plt.xlabel(xlabel, fontsize=15)
+    plt.ylabel(ylabel, fontsize=15)
+    plt.title(title, fontsize=16)
     cbar = plt.colorbar(im) 
-    cbar.set_label(label='counts [$log_{10}N$]', fontsize=12)
+    cbar.set_label(label='counts [$log_{10}N$]', fontsize=15)
     
     if (fit is not None):
         if plot_fit:
             xx = np.linspace(x.min(), x.max(), 5)
-            plt.plot(xx, fit.slope*xx+fit.intercept, '-b', linewidth=3)
+            plt.plot(xx, fit.slope*xx+fit.intercept, '-', linewidth=3, color='cyan')
         
         if np.abs( np.log10(fit.slope) ) > 2. :
             ff2 = "{:.2e}".format
