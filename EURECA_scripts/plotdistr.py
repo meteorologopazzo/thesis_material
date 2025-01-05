@@ -289,18 +289,18 @@ def density_hexbin(x,y,plot_fit,fit,corcoe,grdsz,title,xlabel,ylabel,colormap,po
             ff2 = "{:.2e}".format
 #             plt.annotate('y = '+ str(ff2(fit.slope))+'*x' + ' ' + '+ ' + ' ' +str(ff2(fit.intercept)), xy=(pos[0],pos[1]), \
 #                              xycoords='axes fraction', fontsize=12, color='blue')
-            plt.annotate('slope = '+ str(ff2(fit.slope))+str(slope_units), xy=(pos[0],pos[1]), \
-                             xycoords='axes fraction', fontsize=12, color='k')
+            plt.annotate(r'$\alpha_{LHF}$ = '+ str(ff2(fit.slope))+str(slope_units), xy=(pos[0],pos[1]), \
+                             xycoords='axes fraction', fontsize=14, color='k')
         else: 
 #             plt.annotate('y = '+ str(round(fit.slope,2))+'*x' + ' ' + '+ ' + ' ' +str(round(fit.intercept,2)), xy=(pos[0],pos[1]), \
 #                              xycoords='axes fraction', fontsize=12, color='blue')
-              plt.annotate('slope = '+ str(round(fit.slope,2))+str(slope_units), xy=(pos[0],pos[1]), \
-                             xycoords='axes fraction', fontsize=12, color='k')
+              plt.annotate(r'$\alpha_{LHF}$ = '+ str(round(fit.slope,2))+str(slope_units), xy=(pos[0],pos[1]), \
+                             xycoords='axes fraction', fontsize=14, color='k')
         
             
     if corcoe is not None:
         plt.annotate('corr = '+str(round(corcoe,2)), xy=(pos[0],pos[1]-0.05), \
-                                 xycoords='axes fraction', fontsize=12, color='k')
+                                 xycoords='axes fraction', fontsize=14, color='k')
 
 #     return fig
     
@@ -312,11 +312,11 @@ def density_hexbin_subplots(x, y, fit, corcoe, grdsz, fig, ax, title, xlabel, yl
     y = y[~np.isnan(y)]
     
     hxb = ax.hexbin(x, y, gridsize=grdsz, bins='log', cmap=colormap, mincnt=1)
-    ax.set_xlabel(xlabel, fontsize=14)
-    ax.set_ylabel(ylabel, fontsize=14)
-    ax.set_title(title, fontsize=14)
+    ax.set_xlabel(xlabel, fontsize=16)
+    ax.set_ylabel(ylabel, fontsize=16)
+    ax.set_title(title, fontsize=16)
     cbar = fig.colorbar(hxb, ax=ax) #, label='counts [$log_{10}N$]')
-    cbar.set_label('counts [$log_{10}N$]', fontsize=12)
+    cbar.set_label('counts [$log_{10}N$]', fontsize=16)
     
     if fit is not None:
         xx = np.linspace(x.min(), x.max(), 5)
@@ -324,11 +324,11 @@ def density_hexbin_subplots(x, y, fit, corcoe, grdsz, fig, ax, title, xlabel, yl
         
         if np.abs( np.log10(fit.slope) ) > 2. :
             ff2 = "{:.2e}".format
-            plt.annotate('slope = '+ str(ff2(fit.slope))+str(slope_units), xy=(pos[0],pos[1]), \
-                             xycoords='axes fraction', fontsize=12, color='k')
+            plt.annotate(r'$\alpha_{q}$    = '+ str(ff2(fit.slope)) + '' + str(slope_units), xy=(pos[0],pos[1]), \
+                             xycoords='axes fraction', fontsize=13, color='k')
         else: 
-            plt.annotate('slope = '+ str(round(fit.slope,2))+str(slope_units), xy=(pos[0],pos[1]), \
-                             xycoords='axes fraction', fontsize=12, color='k')
+            plt.annotate(r'$\alpha_{q}$    = '+ str(round(fit.slope,2)) + '' + str(slope_units), xy=(pos[0],pos[1]), \
+                             xycoords='axes fraction', fontsize=13, color='k')
 
     #sreturn fig   
     
