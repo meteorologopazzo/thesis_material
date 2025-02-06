@@ -289,12 +289,12 @@ def density_hexbin(x,y,plot_fit,fit,corcoe,grdsz,title,xlabel,ylabel,colormap,po
             ff2 = "{:.2e}".format
 #             plt.annotate('y = '+ str(ff2(fit.slope))+'*x' + ' ' + '+ ' + ' ' +str(ff2(fit.intercept)), xy=(pos[0],pos[1]), \
 #                              xycoords='axes fraction', fontsize=12, color='blue')
-            plt.annotate(r'$\alpha_{LHF}$ = '+ str(ff2(fit.slope))+str(slope_units), xy=(pos[0],pos[1]), \
+            plt.annotate(r'$\alpha_{HF}$ = '+ str(ff2(fit.slope))+str(slope_units), xy=(pos[0],pos[1]), \
                              xycoords='axes fraction', fontsize=14, color='k')
         else: 
 #             plt.annotate('y = '+ str(round(fit.slope,2))+'*x' + ' ' + '+ ' + ' ' +str(round(fit.intercept,2)), xy=(pos[0],pos[1]), \
 #                              xycoords='axes fraction', fontsize=12, color='blue')
-              plt.annotate(r'$\alpha_{LHF}$ = '+ str(round(fit.slope,2))+str(slope_units), xy=(pos[0],pos[1]), \
+              plt.annotate(r'$\alpha_{HF}$ = '+ str(round(fit.slope,2))+str(slope_units), xy=(pos[0],pos[1]), \
                              xycoords='axes fraction', fontsize=14, color='k')
         
             
