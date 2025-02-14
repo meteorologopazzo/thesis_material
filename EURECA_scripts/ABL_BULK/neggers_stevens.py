@@ -128,9 +128,11 @@ def lcl(p,T,rh=None,rhl=None,rhs=None,return_ldl=False,return_min_lcl_ldl=False)
         else:
             rh = rhs
     if pv > p:
-        print(f"pv = {pv} - p={p}")
-        return NA
+        print(f"DEBUG pv = {pv} - p={p} \n RH = {rh}")
+        return 'nan'   #NA
 
+#     print(f'DEBUG LCL: pv = {pv} - ps = {p}')
+    
     # Calculate lcl_liquid and lcl_solid
     qv = rgasa*pv / (rgasv*p + (rgasa-rgasv)*pv)
     rgasm = (1-qv)*rgasa + qv*rgasv
@@ -227,18 +229,18 @@ def neggers_et_al_2006_stevens_et_al_2002(t,y,SST,D,q_free,th_free,ps,f,U_free,V
     E = 0.2*thv_flux_s/delta_thv
     
     # Mass flux.
-    thv0 = y[2]*(1+0.61*y[1]) # [K], ABL virtual potential temperature
+    thv0 = y[2]*(1+0.61*y[1])              # [K], ABL virtual potential temperature
     b_flux_s = g*thv_flux_s/thv0           # surface buoyancy flux
-    w_star = (y[0]*b_flux_s)**(1/3) # m/s, Deardorff convective velocity scale. 5th try
+    w_star = (y[0]*b_flux_s)**(1/3)        # m/s, Deardorff convective velocity scale. 5th try
 #    w_star = (g*y[0]*thv_flux_s/(y[2]*(ps/ref_p)**(Rd/cpd)*(1+0.61*y[1])))**(1/3) # m/s, Deardorff convective velocity scale. 4th try
 #    w_star = (g*y[0]*thv_flux_s/(y[2]*(1+0.61*y[1])))**(1/3) # m/s, Deardorff convective velocity scale. 3rd try
 #    w_star = (g*y[0]*thv_flux_s/y[2])**(1/3) # m/s, Deardorff convective velocity scale. 2nd try
 #    w_star = (g*y[0]*thv_flux_s/th_s)**(1/3) # m/s, Deardorff convective velocity scale. 1st try    
-    T0 = y[2]*(ps/ref_p)**(Rd/cpd) # [K], air temperature at the surface, from the ABL theta value.
-    T_h = T0-g/cpd*y[0] # [K], air temperature at h following a dry adiabat.
-    p_h = ps*100*(1-g*y[0]/(T0*cpd))**(cpd/Rd) # [Pa], air pressure at h with p=rho*R*T; dp/dz=-rho*g; dtheta/dz=0 
-    e_sat_h = qsat(T_h-273.15,p_h/100)*100 # [Pa], saturation vapor pressure at h.
-    q_sat = 0.622*e_sat_h/(p_h-0.378*e_sat_h) # [kg/kg], saturation specific humidity at h.   
+    T0 = y[2]*(ps/ref_p)**(Rd/cpd)              # [K], air temperature at the surface, from the ABL theta value.
+    T_h = T0-g/cpd*y[0]                         # [K], air temperature at h following a dry adiabat.
+    p_h = ps*100*(1-g*y[0]/(T0*cpd))**(cpd/Rd)  # [Pa], air pressure at h with p=rho*R*T; dp/dz=-rho*g; dtheta/dz=0 
+    e_sat_h = qsat(T_h-273.15,p_h/100)*100      # [Pa], saturation vapor pressure at h.
+    q_sat = 0.622*e_sat_h/(p_h-0.378*e_sat_h)   # [kg/kg], saturation specific humidity at h.   
     sigma_q = np.sqrt(-q_flux_s*delta_q*y[0]/(w_star*delta_z))
     
     ## Ale: let's try to see if we constrain area_c to be positive
@@ -259,7 +261,8 @@ def neggers_et_al_2006_stevens_et_al_2002(t,y,SST,D,q_free,th_free,ps,f,U_free,V
     rhos = ps*100/(Rd*T0)
     
     # check what happens to LCL
-    LCL = lcl(ps*100,T0,y[1]/q_s)
+    sfc_rh = y[1]/(qsea(T0-273.15,ps)*1e-3) if y[1]/(qsea(T0-273.15,ps)*1e-3) < 1. else 1.
+    LCL = lcl(ps*100,T0,sfc_rh)
     
     ### Define the equations to be solved.
     dh_dt = E - D*y[0] - M 
@@ -371,21 +374,23 @@ def neggers_stevens_FracE(t,y,SST,D,q_free,th_free,ps,f,U_free,V_free,we, dict_e
     L = - u_star**3/(0.4*b_flux_s)# [m], Monin-Obukhov length
 #     print
     zL = 10/L # [1], ratio z/L, we assume z=10 m as a reference height: we are interested in the surface stability
-    we_dyn = E*prt_dyer74(zL)
+    we_dyn = E_frac*E*prt_dyer74(zL)
 #     print(we_dyn)
 
     # Surface air density.
     rhos = ps*100/(Rd*T0)
     
     # check what happens to LCL
-    LCL = lcl(ps*100,T0,y[1]/q_s)
+    sfc_rh = y[1]/(qsea(T0-273.15,ps)*1e-3) if y[1]/(qsea(T0-273.15,ps)*1e-3) < 1. else 1.
+    LCL = lcl(ps*100,T0,sfc_rh)
+    
     
     ### Define the equations to be solved.
-    dh_dt = E - D*y[0] - M 
+    dh_dt = E_frac*E - D*y[0] - M 
     dq_dt = (q_flux_s + E_frac*E*delta_q)/y[0] + F_advq
     dth_dt = (th_flux_s + E_frac*E*delta_th)/y[0] + F_advth + F_rad
-    dU_dt = f*(y[4]-V_free)-y[3]*(CD*V_mag+we_dyn)/y[0]+U_free*E_frac*we_dyn/y[0]
-    dV_dt = -f*(y[3]-U_free)-y[4]*(CD*V_mag+we_dyn)/y[0]+V_free*E_frac*we_dyn/y[0]
+    dU_dt = f*(y[4]-V_free)-y[3]*(CD*V_mag+we_dyn)/y[0]+U_free*we_dyn/y[0]
+    dV_dt = -f*(y[3]-U_free)-y[4]*(CD*V_mag+we_dyn)/y[0]+V_free*we_dyn/y[0]
     
     #print(area_c)
     #print((y[1]-q_sat)*1e3)
@@ -399,6 +404,7 @@ def neggers_stevens_FracE(t,y,SST,D,q_free,th_free,ps,f,U_free,V_free,we, dict_e
     dict_ext['E_ext'].append(E)                          # E_ext
     dict_ext['sigma_q_ext'].append(sigma_q)              # sigma_q_ext
     dict_ext['qsat_ext'].append(q_sat)                   # q sat at h
+    dict_ext['qs_ext'].append(q_s)                       # surface qsat
     
     dict_ext['LHF_ext'].append(q_flux_s*Le*rhos)         # LHF_ext
     dict_ext['LHF_CC_ext'].append(q_flux_s_CC*Le*rhos)   # LHF_ext
@@ -497,7 +503,8 @@ def neggers_stevens_boxModel(t,y,SST,D,q_free,th_free,ps,f,U_free,V_free,we, dic
     rhos = ps*100/(Rd*T0)
     
     # check what happens to LCL
-    LCL = lcl(ps*100,T0,y[1]/q_s)
+    sfc_rh = y[1]/(qsea(T0-273.15,ps)*1e-3) if y[1]/(qsea(T0-273.15,ps)*1e-3) < 1. else 1.
+    LCL = lcl(ps*100,T0,sfc_rh)
     
     ### Define the equations to be solved.
     dh_dt = y[0]-y[0]
