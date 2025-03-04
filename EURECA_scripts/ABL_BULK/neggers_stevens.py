@@ -416,6 +416,12 @@ def neggers_et_al_2006_stevens_et_al_2002_fracUstar(t,y,SST,D,q_free,th_free,ps,
     dict_ext['we_dyn_ext'].append(we_dyn)                # entrainment of momentum
     dict_ext['LCL_ext'].append(LCL)                      # LCL height
     
+    dict_ext['C_delta_q'].append(delta_q)                # Cq * delta_q
+    dict_ext['C_delta_th'].append(delta_th)              # Cth * delta_th
+    dict_ext['q_flux_s'].append(q_flux_s)                # moisture flux at surface 
+    dict_ext['th_flux_s'].append(th_flux_s)              # th flux at surface
+    
+    
     return dh_dt, dq_dt, dth_dt, dU_dt, dV_dt
 
 
