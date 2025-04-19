@@ -45,6 +45,13 @@ def slopes_r_p(x,y,std_y=None):
     t_value = np.abs(corr_coeff)*np.sqrt((df)/(1-corr_coeff**2))
     p_value = 2*(1 - stats.t.cdf(t_value,df=df))
     
+    df = np.size(x)-2
+    mean_x = np.mean(x); mean_x2 = np.mean(x**2); lever_arm = mean_x2-mean_x**2
+    sigma_y = np.sqrt( np.sum(  (y-linreg.slope*x-linreg.intercept)**2 )/df  )
+    sigma_slope = sigma_y/( np.sqrt(np.size(x)*(lever_arm) ) )
+    sigma_intercept = sigma_y*np.sqrt(mean_x2/( np.size(x)*(lever_arm) ))
+    
+    sigma_coeff = {'sigma_slope':sigma_slope, 'sigma_intercept':sigma_intercept}
     
     if std_y is not None:
         chisq = np.sum(  (y-linreg.slope*x-linreg.intercept)**2 / std_y**2 )
@@ -57,7 +64,7 @@ def slopes_r_p(x,y,std_y=None):
     chi_square = {'chi2': chisq, 'chi2_cumulated': chisq_cumul_right, 'chi2_reduced': chisq_rid}
         
         
-    return linreg, corr_coeff, p_value, chi_square
+    return linreg, sigma_coeff, corr_coeff, p_value, chi_square
 
 
 ########### APPLY SUBSAMPLING FOR COMPARISON and draw statistics only on subsampled data
