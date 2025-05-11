@@ -320,7 +320,7 @@ def density_hexbin_subplots(x, y, fit, corcoe, grdsz, fig, ax, title, xlabel, yl
     
     if fit is not None:
         xx = np.linspace(x.min(), x.max(), 5)
-        ax.plot(xx, fit.slope*xx+fit.intercept, '-b', linewidth=3)
+        ax.plot(xx, fit.slope*xx+fit.intercept, '--k', linewidth=3)
         
 #         if np.abs( np.log10(fit.slope) ) > 2. :
 #             ff2 = "{:.2e}".format

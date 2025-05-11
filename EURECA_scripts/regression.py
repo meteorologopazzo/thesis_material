@@ -99,10 +99,10 @@ def MY_point_regr(x_array,y_array):
     cor=cov/(x_std*y_std)
     
     # SPEARMAN RANKS
-    corr_spearman = np.zeros((546, 573))
+    corr_spearman = np.zeros_like(x_array[0])
     
-    for i in range(546):
-        for j in range(573):
+    for i in range(corr_spearman.shape[0]):
+        for j in range(corr_spearman.shape[1]):
             corr_spearman[i,j], trash = stats.spearmanr(x_array[:,i,j], y_array[:,i,j], axis=0)
     
     # Compute slope between time series of x_array and y_array over each (lon,lat) grid box.
