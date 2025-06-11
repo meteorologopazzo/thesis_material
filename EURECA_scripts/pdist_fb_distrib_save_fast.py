@@ -91,6 +91,97 @@ def dist_3d_subsample(x,y,perc_step, nbins, popmean, nt, nttop, nskip, nskiptop,
 ################################################################
 
 
+
+
+import numpy as np
+from scipy import stats
+
+def perc_distribution_pvalue_twoContrs(control_1, control_2, variable, nbins, perc_step, popmean):
+    # Initialize output arrays
+    distribution = np.zeros((nbins, nbins))
+    std_distribution = np.zeros((nbins, nbins))
+    std_err_distribution = np.zeros((nbins, nbins))
+    number_of_points = np.zeros((nbins, nbins))
+    p_value = np.zeros((nbins, nbins))
+    
+    distribution_control_1 = np.zeros(nbins)
+    distribution_control_2 = np.zeros(nbins)
+    
+    # Remove NaNs
+    valid_mask = ~np.isnan(control_1) & ~np.isnan(control_2) & ~np.isnan(variable)
+    c1, c2, var = control_1[valid_mask], control_2[valid_mask], variable[valid_mask]
+
+    percentiles = np.arange(0, 100, perc_step)
+
+    # Compute distribution_control_1
+    for qq1, pp1 in enumerate(percentiles):
+        lower_1 = np.percentile(c1, pp1)
+        upper_1 = np.percentile(c1, pp1 + perc_step)
+        mask_1 = (c1 >= lower_1) & (c1 < upper_1)
+        if np.any(mask_1):
+            distribution_control_1[qq1] = np.nanmean(c1[mask_1])
+        else:
+            distribution_control_1[qq1] = np.nan
+
+    # Compute distribution_control_2
+    for qq2, pp2 in enumerate(percentiles):
+        lower_2 = np.percentile(c2, pp2)
+        upper_2 = np.percentile(c2, pp2 + perc_step)
+        mask_2 = (c2 >= lower_2) & (c2 < upper_2)
+        if np.any(mask_2):
+            distribution_control_2[qq2] = np.nanmean(c2[mask_2])
+        else:
+            distribution_control_2[qq2] = np.nan
+
+    # Compute gridded stats
+    for qq1, pp1 in enumerate(percentiles):
+        lower_1 = np.percentile(c1, pp1)
+        upper_1 = np.percentile(c1, pp1 + perc_step)
+        mask_1 = (c1 >= lower_1) & (c1 < upper_1)
+
+        for qq2, pp2 in enumerate(percentiles):
+            lower_2 = np.percentile(c2, pp2)
+            upper_2 = np.percentile(c2, pp2 + perc_step)
+            mask_2 = (c2 >= lower_2) & (c2 < upper_2)
+
+            bin_mask = mask_1 & mask_2
+            bin_values = var[bin_mask]
+
+            if bin_values.size > 0:
+                cond_mean = np.nanmean(bin_values)
+                cond_std = np.nanstd(bin_values)
+                n_points = bin_values.size
+                t_stat, p_val = stats.ttest_1samp(bin_values, popmean)
+
+                distribution[qq1, qq2] = cond_mean
+                std_distribution[qq1, qq2] = cond_std
+                std_err_distribution[qq1, qq2] = cond_std / np.sqrt(n_points)
+                number_of_points[qq1, qq2] = n_points
+                p_value[qq1, qq2] = p_val
+            else:
+                distribution[qq1, qq2] = np.nan
+                std_distribution[qq1, qq2] = np.nan
+                std_err_distribution[qq1, qq2] = np.nan
+                number_of_points[qq1, qq2] = 0
+                p_value[qq1, qq2] = np.nan
+
+    return distribution_control_1, distribution_control_2, distribution, std_distribution, std_err_distribution, number_of_points, p_value
+
+
+def distrib_twoContrs(x1, x2, y, perc_step, nbins, popmean):
+    xx1 = x1.copy(); control1 = xx1.reshape(-1)
+    xx2 = x2.copy(); control2 = xx2.reshape(-1)
+    yy = y.copy(); variable = yy.reshape(-1)
+
+    ##### Perc bin distribution: pvalue
+    distr_x1, distr_x2, distr_y, std_y, stderr_y, npoints_y, pvalue_y = perc_distribution_pvalue_twoContrs(control1, control2, variable, nbins, perc_step, popmean)
+
+    return distr_x1, distr_x2, distr_y, std_y, stderr_y, npoints_y, pvalue_y
+
+
+
+
+
 # this function allows to easily store a 
 # number of variables into a common .npy file
 # which must be specified in th args
