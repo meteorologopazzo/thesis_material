@@ -278,7 +278,7 @@ def density_hexbin(x,y,plot_fit,fit,corcoe,grdsz,title,xlabel,ylabel,colormap,po
     plt.ylabel(ylabel, fontsize=15)
     plt.title(title, fontsize=16)
     cbar = plt.colorbar(im) 
-    cbar.set_label(label='counts [$log_{10}N$]', fontsize=15)
+    cbar.set_label(label=r'counts [$\rm log_{10}N$]', fontsize=15)
     
     if (fit is not None):
         if plot_fit:
