@@ -391,11 +391,11 @@ def neggers_et_al_2006_stevens_et_al_2002_fracUstar(t,y,SST,D,q_free,th_free,ps,
     
     ### Define the equations to be solved.
     dh_dt = E - D*y[0] - M 
-    dq_dt = (q_flux_s + E*delta_q)/y[0] + F_advq
+    dq_dt = (q_flux_s + E*delta_q)/y[0] #+ F_advq
     dth_dt = (th_flux_s + E*delta_th)/y[0] + F_advth + F_rad
     dU_dt = f*(y[4]-V_free)-y[3]*(CD*V_mag+we_dyn)/y[0]+U_free*we_dyn/y[0]
     dV_dt = -f*(y[3]-U_free)-y[4]*(CD*V_mag+we_dyn)/y[0]+V_free*we_dyn/y[0]
-    
+         
     #print(area_c)
     #print((y[1]-q_sat)*1e3)
     #print(sigma_q*1e3)
